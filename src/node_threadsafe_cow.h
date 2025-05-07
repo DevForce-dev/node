@@ -73,6 +73,11 @@ class ThreadsafeCopyOnWrite final {
     const T& operator*() const;
     const T* operator->() const;
 
+    auto begin() const { return cow_->read()->begin(); }
+    auto end() const { return cow_->read()->end(); }
+
+    auto size() const { return cow_->read()->size(); }
+
    private:
     const ThreadsafeCopyOnWrite<T>* cow_;
     RwLock::ScopedReadLock lock_;

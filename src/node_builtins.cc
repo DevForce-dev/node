@@ -7,6 +7,8 @@
 #include "simdutf.h"
 #include "util-inl.h"
 
+#include <ranges>
+
 namespace node {
 namespace builtins {
 
@@ -512,7 +514,12 @@ bool BuiltinLoader::CompileAllBuiltinsAndCopyCodeCache(
     Local<Context> context,
     const std::vector<std::string>& eager_builtins,
     std::vector<CodeCacheInfo>* out) {
-  auto ids = GetBuiltinIds();
+  const auto& source_map = source_.read();
+  std::vector<std::string_view> ids;
+  ids.reserve(source_map.size());
+  for (const auto& pair : source_map) {
+    ids.push_back(pair.first);
+  }
   bool all_succeeded = true;
   constexpr std::string_view v8_tools_prefix = "internal/deps/v8/tools/";
   constexpr std::string_view primordial_prefix = "internal/per_context/";
@@ -646,12 +653,20 @@ void BuiltinLoader::BuiltinIdsGetter(Local<Name> property,
   Environment* env = Environment::GetCurrent(info);
   Isolate* isolate = env->isolate();
 
-  auto ids = env->builtin_loader()->GetBuiltinIds();
+  // Alternative implementation without std::views::keys
+  const auto& source_map = env->builtin_loader()->source_.read();
+  std::vector<std::string_view> ids;
+  ids.reserve(source_map.size());
+  for (const auto& pair : source_map) {
+    ids.push_back(pair.first);
+  }
+
   Local<Value> ret;
   if (ToV8Value(isolate->GetCurrentContext(), ids).ToLocal(&ret)) {
     info.GetReturnValue().Set(ret);
   }
 }
+
 
 void BuiltinLoader::ConfigStringGetter(
     Local<Name> property, const PropertyCallbackInfo<Value>& info) {

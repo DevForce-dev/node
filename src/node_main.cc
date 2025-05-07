@@ -22,6 +22,8 @@
 #include "node.h"
 #include <cstdio>
 
+#if 1
+
 #ifdef _WIN32
 #include <windows.h>
 #include <VersionHelpers.h>
@@ -96,4 +98,6 @@ int wmain(int argc, wchar_t* wargv[]) {
 int main(int argc, char* argv[]) {
   return node::Start(argc, argv);
 }
+#endif
+
 #endif
