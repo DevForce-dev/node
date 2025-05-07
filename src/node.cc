@@ -1,3 +1,4 @@
+#include "node.h"
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1549,6 +1550,16 @@ int Start(int argc, char** argv) {
 #endif
   return static_cast<int>(StartInternal(argc, argv));
 }
+
+// >>>>> begin DV changes
+NODE_EXTERN int DV_Start_C(int argc, char* argv[]) {
+  return Start(argc, argv);
+}
+
+NODE_EXTERN const char* DV_NodeVersion_C() {
+  return NODE_VERSION;
+}
+// end DV changes <<<<<<
 
 int Stop(Environment* env, StopFlags::Flags flags) {
   env->ExitEnv(flags);
